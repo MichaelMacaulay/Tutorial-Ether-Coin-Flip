@@ -107,7 +107,7 @@ contract EtherCoinFlip is VRFV2PlusWrapperConsumerBase, ConfirmedOwner {
 
         s_requests[requestId] = RequestStatus({
             paid: reqPrice,
-            randomWords: new uint256,
+            randomWords: new uint256[](0),
             fulfilled: false,
             coinFlipID: coinFlipID
         });
