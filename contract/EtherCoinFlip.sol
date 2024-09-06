@@ -40,7 +40,7 @@ contract EtherCoinFlip is VRFV2PlusWrapperConsumerBase, ConfirmedOwner {
     uint32 public callbackGasLimit = 100000;
     uint16 public requestConfirmations = 3;
     uint32 public numWords = 1;
-    address public linkAddress = 0x779877A7B0D9E8603169DdbD7836e478b4624789;
+    address public linkAddress = 0xE4aB69C077896252FAFBD49EFD26B5D171A32410;
     address public wrapperAddress = 0x195f15F2d49d693cE265b4fB0fdDbE15b1850Cc1;
 
     constructor() ConfirmedOwner(msg.sender) VRFV2PlusWrapperConsumerBase(wrapperAddress) {}
