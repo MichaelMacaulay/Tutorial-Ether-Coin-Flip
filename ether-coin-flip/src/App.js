@@ -22,8 +22,6 @@ async function initializeProvider() {
   const contract = new ethers.Contract(contractAddress, abi, signer);
 }
 
-initializeProvider();
-
 // Contract details
 const contractAddress = "0x12Eb0E4591fD62B3e8af390C81e5E111b1CE5003";
 const abi = ABI;
