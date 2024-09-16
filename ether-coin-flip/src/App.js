@@ -8,7 +8,8 @@ const contractAddress = "0x12Eb0E4591fD62B3e8af390C81e5E111b1CE5003";
 const abi = ABI;
 
 // Using Base Sepolia
-const baseSepoliaChainId = "84532"; // This is Base Sepolia in hexadecimal (84532)
+const baseSepoliaChainId = "0x14924"; // Correct Chain ID in hexadecimal for 84532
+
 const baseSepoliaParams = {
   chainId: baseSepoliaChainId,
   chainName: "Base Sepolia",
@@ -27,6 +28,8 @@ let provider, signer, contract;
 async function switchToBaseSepolia() {
   try {
     const currentChainId = await provider.send("eth_chainId", []);
+
+    // If user is not on Base Sepolia network, request to switch/add network
     if (currentChainId !== baseSepoliaChainId) {
       try {
         // Request to switch to Base Sepolia
@@ -34,6 +37,7 @@ async function switchToBaseSepolia() {
           { chainId: baseSepoliaChainId },
         ]);
       } catch (switchError) {
+        // If the error code is 4902, it means the chain is not added to MetaMask
         if (switchError.code === 4902) {
           try {
             // Request to add Base Sepolia
@@ -56,22 +60,26 @@ async function switchToBaseSepolia() {
 
 async function initializeProvider() {
   if (typeof window.ethereum !== "undefined") {
-    // MetaMask is available
-    provider = new ethers.providers.Web3Provider(window.ethereum);
+    try {
+      // Initialize ethers provider
+      provider = new ethers.providers.Web3Provider(window.ethereum);
 
-    // Request accounts
-    await provider.send("eth_requestAccounts", []);
+      // Request accounts from MetaMask
+      await provider.send("eth_requestAccounts", []);
 
-    signer = provider.getSigner();
-    contract = new ethers.Contract(contractAddress, abi, signer);
+      // Get the signer and contract instance
+      signer = provider.getSigner();
+      contract = new ethers.Contract(contractAddress, abi, signer);
 
-    // After connecting, switch to Base Sepolia
-    await switchToBaseSepolia();
+      // Switch to Base Sepolia network after connecting
+      await switchToBaseSepolia();
+    } catch (error) {
+      console.error("Error initializing provider:", error);
+    }
   } else {
     alert("MetaMask is not installed. Please install MetaMask and try again.");
   }
 }
-
 
 function StartCoinFlipButton() {
   const [wager, setWager] = useState(""); // State to store the wager amount
