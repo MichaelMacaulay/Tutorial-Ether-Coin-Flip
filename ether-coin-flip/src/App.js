@@ -1,5 +1,10 @@
 import React, { useState } from "react";
 import "./App.css";
+import ABI from "./components/ABI.json";
+
+const ethers = require("ethers");
+
+
 
 function StartCoinFlipButton() {
   const [wager, setWager] = useState(""); // State to store the wager amount
