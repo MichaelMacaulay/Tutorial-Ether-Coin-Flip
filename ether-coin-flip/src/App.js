@@ -1,14 +1,19 @@
-import './App.css';
-import StartCoinFlipButton from './Components/StartCoinFlipButton';
-import EndCoinFlipButton from './Components/EndCoinFlipButton';
+import "./App.css";
+
+function StartCoinFlipButton() {
+  const startCoinFlip = () => {
+    console.log("Coin flip started!");
+    
+  };
+
+  return <button onClick={startCoinFlip}>Start Coin Flip</button>;
+}
 
 function App() {
   return (
     <div>
       <h1>Ether Coin Flip</h1>
       <StartCoinFlipButton />
-      <EndCoinFlipButton />
-
     </div>
   );
 }
