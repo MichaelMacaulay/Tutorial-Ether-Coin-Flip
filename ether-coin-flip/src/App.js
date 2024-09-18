@@ -7,7 +7,7 @@ const contractAddress = "0x12Eb0E4591fD62B3e8af390C81e5E111b1CE5003";
 const abi = ABI;
 
 // Using Base Sepolia
-const baseSepoliaChainId = "0x149E4";
+const baseSepoliaChainId = "84532";
 
 const baseSepoliaParams = {
   chainId: baseSepoliaChainId,
