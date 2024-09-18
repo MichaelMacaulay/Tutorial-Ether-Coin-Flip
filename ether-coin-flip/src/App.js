@@ -7,7 +7,7 @@ const contractAddress = "0x12Eb0E4591fD62B3e8af390C81e5E111b1CE5003";
 const abi = ABI;
 
 // Using Base Sepolia
-const baseSepoliaChainId = "84532";
+const baseSepoliaChainId = "0x149E4";
 
 const baseSepoliaParams = {
   chainId: baseSepoliaChainId,
@@ -75,8 +75,8 @@ function StartCoinFlipButton() {
       return;
     }
 
-        console.log(`Starting Coin Flip`);
-        console.log(`Wager Amount: ${wager} ETH`);
+    console.log(`Starting Coin Flip`);
+    console.log(`Wager Amount: ${wager} ETH`);
 
     try {
       const transaction = await contract.newCoinFlip({
@@ -111,6 +111,10 @@ function EndCoinFlipButton() {
       console.error("Contract is not initialized");
       return;
     }
+
+    console.log(`Ending Coin Flip`);
+    console.log(`Coin Flip ID: ${coinFlipId}`);
+    console.log(`Ending Wager Amount: ${endWager} ETH`);
 
     try {
       const transaction = await contract.endCoinFlip(coinFlipId, {
