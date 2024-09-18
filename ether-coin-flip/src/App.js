@@ -28,24 +28,17 @@ async function switchToBaseSepolia() {
   try {
     const currentChainId = await provider.send("eth_chainId", []);
 
-    // If user is not on Base Sepolia network, request to switch/add network
     if (currentChainId !== baseSepoliaChainId) {
       try {
-        // Request to switch to Base Sepolia
         await provider.send("wallet_switchEthereumChain", [
           { chainId: baseSepoliaChainId },
         ]);
       } catch (switchError) {
-        // If the error code is 4902, it means the chain is not added to MetaMask
         if (switchError.code === 4902) {
           try {
-            // Request to add Base Sepolia
             await provider.send("wallet_addEthereumChain", [baseSepoliaParams]);
           } catch (addError) {
-            console.error(
-              "Failed to add Base Sepolia network to MetaMask:",
-              addError
-            );
+            console.error("Failed to add Base Sepolia network:", addError);
           }
         } else {
           console.error("Failed to switch to Base Sepolia:", switchError);
@@ -60,28 +53,21 @@ async function switchToBaseSepolia() {
 async function initializeProvider() {
   if (typeof window.ethereum !== "undefined") {
     try {
-      // Initialize ethers provider
       provider = new ethers.providers.Web3Provider(window.ethereum);
-
-      // Request accounts from MetaMask
       await provider.send("eth_requestAccounts", []);
-
-      // Get the signer and contract instance
       signer = provider.getSigner();
       contract = new ethers.Contract(contractAddress, abi, signer);
-
-      // Switch to Base Sepolia network after connecting
       await switchToBaseSepolia();
     } catch (error) {
       console.error("Error initializing provider:", error);
     }
   } else {
-    alert("MetaMask is not installed. Please install MetaMask and try again.");
+    alert("MetaMask is not installed. Please install MetaMask.");
   }
 }
 
 function StartCoinFlipButton() {
-  const [wager, setWager] = useState(""); // State to store the wager amount
+  const [wager, setWager] = useState("");
 
   const startCoinFlip = async () => {
     if (!contract) {
@@ -89,11 +75,14 @@ function StartCoinFlipButton() {
       return;
     }
 
+        console.log(`Starting Coin Flip`);
+        console.log(`Wager Amount: ${wager} ETH`);
+
     try {
       const transaction = await contract.newCoinFlip({
-        value: ethers.utils.parseEther(wager), // Sends the wager in ETH
+        value: ethers.utils.parseEther(wager),
       });
-      await transaction.wait(); // Waits for the transaction to be confirmed
+      await transaction.wait();
       console.log(`Coin flip started with a wager of ${wager} ETH!`);
     } catch (error) {
       console.error("Error starting coin flip:", error);
@@ -106,9 +95,51 @@ function StartCoinFlipButton() {
         type="number"
         placeholder="Enter Wager Amount (ETH)"
         value={wager}
-        onChange={(e) => setWager(e.target.value)} // Updates the state with input value
+        onChange={(e) => setWager(e.target.value)}
       />
       <button onClick={startCoinFlip}>Start Coin Flip</button>
+    </div>
+  );
+}
+
+function EndCoinFlipButton() {
+  const [coinFlipId, setCoinFlipId] = useState("");
+  const [endWager, setEndWager] = useState("");
+
+  const endCoinFlip = async () => {
+    if (!contract) {
+      console.error("Contract is not initialized");
+      return;
+    }
+
+    try {
+      const transaction = await contract.endCoinFlip(coinFlipId, {
+        value: ethers.utils.parseEther(endWager),
+      });
+      await transaction.wait();
+      console.log(
+        `Coin flip with ID ${coinFlipId} ended with a wager of ${endWager} ETH!`
+      );
+    } catch (error) {
+      console.error("Error ending coin flip:", error);
+    }
+  };
+
+  return (
+    <div>
+      <input
+        type="text"
+        placeholder="Enter Coin Flip ID"
+        value={coinFlipId}
+        onChange={(e) => setCoinFlipId(e.target.value)}
+      />
+      <input
+        type="number"
+        placeholder="Enter Wager Amount (ETH)"
+        value={endWager}
+        onChange={(e) => setEndWager(e.target.value)}
+      />
+      <button onClick={endCoinFlip}>End Coin Flip</button>
     </div>
   );
 }
@@ -119,7 +150,7 @@ function App() {
   const connectWallet = async () => {
     try {
       await initializeProvider();
-      setIsConnected(true); // Set state to indicate the wallet is connected
+      setIsConnected(true);
     } catch (error) {
       console.error("Error connecting wallet:", error);
     }
@@ -131,7 +162,10 @@ function App() {
       {!isConnected ? (
         <button onClick={connectWallet}>Connect Wallet</button>
       ) : (
-        <StartCoinFlipButton />
+        <>
+          <StartCoinFlipButton />
+          <EndCoinFlipButton />
+        </>
       )}
     </div>
   );
