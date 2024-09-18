@@ -90,7 +90,7 @@ function StartCoinFlipButton() {
     }
 
     try {
-      const transaction = await contract.startCoinFlip({
+      const transaction = await contract.newCoinFlip({
         value: ethers.utils.parseEther(wager), // Sends the wager in ETH
       });
       await transaction.wait(); // Waits for the transaction to be confirmed
