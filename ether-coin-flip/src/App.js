@@ -3,7 +3,7 @@ import "./App.css";
 import ABI from "./components/ABI.json";
 import { ethers } from "ethers";
 
-const contractAddress = "0x12Eb0E4591fD62B3e8af390C81e5E111b1CE5003";
+const contractAddress = "0x09E6ba79547b9048AFD8892a9728B535B923f3F4";
 const abi = ABI;
 
 // Using Base Sepolia
