@@ -90,7 +90,60 @@
         "name": "winner",
         "type": "address"
       },
-      { "internalType": "address payable", "name": "loser", "type": "address" }
+      { "internalType": "address payable", "name": "loser", "type": "address" },
+      { "internalType": "bool", "name": "isActive", "type": "bool" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getActiveCoinFlips",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "uint256", "name": "ID", "type": "uint256" },
+          {
+            "internalType": "address payable",
+            "name": "betStarter",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "startingWager",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address payable",
+            "name": "betEnder",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "endingWager",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "etherTotal",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address payable",
+            "name": "winner",
+            "type": "address"
+          },
+          {
+            "internalType": "address payable",
+            "name": "loser",
+            "type": "address"
+          },
+          { "internalType": "bool", "name": "isActive", "type": "bool" }
+        ],
+        "internalType": "struct EtherCoinFlip.EtherCoinFlipStruct[]",
+        "name": "",
+        "type": "tuple[]"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
