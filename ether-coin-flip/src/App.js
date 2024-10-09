@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import "./App.css";
 import ABI from "./components/ABI.json";
 import { ethers } from "ethers";
+import Dashboard from "./components/Dashboard.js"
 
-const contractAddress = "0x28556A538b0E35F0375854266A3dF965f648f71b";
+const contractAddress = "0xd3037A0CFfADA943253A0CCc84593cd7b79E1ABd";
 const abi = ABI;
 
 // Using Base Sepolia
@@ -169,6 +170,7 @@ function App() {
         <>
           <StartCoinFlipButton />
           <EndCoinFlipButton />
+          <Dashboard />
         </>
       )}
     </div>

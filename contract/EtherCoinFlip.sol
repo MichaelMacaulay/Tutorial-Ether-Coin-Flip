@@ -12,14 +12,14 @@ contract EtherCoinFlip {
         uint256 etherTotal;
         address payable winner;
         address payable loser;
-        bool isActive; 
+        bool isActive;
     }
 
     uint256 numberOfCoinFlips = 1;
     mapping(uint256 => EtherCoinFlipStruct) public EtherCoinFlipStructs;
 
-    event StartedCoinFlip(uint256 indexed theCoinFlipID, address indexed theBetStarter, uint256 theStartingWager);
-    event FinishedCoinFlip(uint256 indexed theCoinFlipID, address indexed winner, address indexed loser);
+    event StartedCoinFlip(uint256 indexed theCoinFlipID, address indexed theBetStarter, uint256 theStartingWager, bool isActive);
+    event FinishedCoinFlip(uint256 indexed theCoinFlipID, address indexed winner, address indexed loser, bool isActive);
 
     function newCoinFlip() public payable returns (uint256 coinFlipID) {
         address payable player1 = payable(msg.sender);
@@ -35,7 +35,7 @@ contract EtherCoinFlip {
             payable(address(0)),
             true
         );
-        emit StartedCoinFlip(coinFlipID, player1, msg.value);
+        emit StartedCoinFlip(coinFlipID, player1, msg.value, true);
     }
 
     function endCoinFlip(uint256 coinFlipID) public payable {
@@ -69,7 +69,7 @@ contract EtherCoinFlip {
 
         currentCoinFlip.isActive = false;
 
-        emit FinishedCoinFlip(currentCoinFlip.ID, currentCoinFlip.winner, currentCoinFlip.loser);
+        emit FinishedCoinFlip(currentCoinFlip.ID, currentCoinFlip.winner, currentCoinFlip.loser, false);
     }
 
     function getActiveCoinFlips() public view returns (EtherCoinFlipStruct[] memory) {
