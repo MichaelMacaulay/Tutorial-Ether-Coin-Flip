@@ -32,6 +32,12 @@
 				"internalType": "address",
 				"name": "loser",
 				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "bool",
+				"name": "isActive",
+				"type": "bool"
 			}
 		],
 		"name": "FinishedCoinFlip",
@@ -70,6 +76,12 @@
 				"internalType": "uint256",
 				"name": "theStartingWager",
 				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "bool",
+				"name": "isActive",
+				"type": "bool"
 			}
 		],
 		"name": "StartedCoinFlip",
