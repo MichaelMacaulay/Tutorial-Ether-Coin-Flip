@@ -6,8 +6,6 @@ import { gql, request } from 'graphql-request';
 const query = gql`
   {
     startedCoinFlips(where: { isActive: true }, first: 10) {
-      id
-      theCoinFlipID
       theBetStarter
       theStartingWager
       blockNumber
@@ -17,8 +15,7 @@ const query = gql`
   }
 `;
 
-// Replace with your subgraph URL
-const url = 'https://gateway.thegraph.com/api/df72e242721d7f631d196a63dc904c64/subgraphs/id/FumXBjDi5FCQKsjSq3ZjCo7CSTK2nDV3XLa41Bw8337R';
+const url = process.env.REACT_APP_THE_GRAPH_API_URL;
 
 export default function Dashboard() {
   const { data, status } = useQuery({
@@ -36,7 +33,6 @@ export default function Dashboard() {
         <table>
           <thead>
             <tr>
-              <th>ID</th>
               <th>Bet Starter</th>
               <th>Starting Wager (ETH)</th>
               <th>Block Number</th>
