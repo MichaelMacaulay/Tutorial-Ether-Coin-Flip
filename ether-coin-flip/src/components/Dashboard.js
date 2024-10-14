@@ -6,6 +6,8 @@ import { gql, request } from 'graphql-request';
 const query = gql`
   {
     startedCoinFlips(where: { isActive: true }, first: 10) {
+      id
+      theCoinFlipID
       theBetStarter
       theStartingWager
       blockNumber
@@ -33,11 +35,9 @@ export default function Dashboard() {
         <table>
           <thead>
             <tr>
+              <th>Coin Flip ID</th>
               <th>Bet Starter</th>
-              <th>Starting Wager (ETH)</th>
-              <th>Block Number</th>
-              <th>Block Timestamp</th>
-              <th>Transaction Hash</th>
+              <th>Wager</th>
             </tr>
           </thead>
           <tbody>
@@ -46,8 +46,6 @@ export default function Dashboard() {
                 <td>{flip.theCoinFlipID}</td>
                 <td>{flip.theBetStarter}</td>
                 <td>{flip.theStartingWager / 1e18} ETH</td>
-                <td>{flip.blockNumber}</td>
-                <td>{new Date(flip.blockTimestamp * 1000).toLocaleString()}</td>
                 <td>
                   <a
                     href={`https://base-sepolia.blockscout.com/tx/${flip.transactionHash}`}
