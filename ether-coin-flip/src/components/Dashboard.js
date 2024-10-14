@@ -1,11 +1,13 @@
 import React from 'react';
-import { useQuery, QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { gql, request } from 'graphql-request';
+import { ethers } from 'ethers';
 
-// GraphQL query to get active coin flips (adjust the fields as necessary)
 const query = gql`
   {
     startedCoinFlips(where: { isActive: true }, first: 10) {
+      id
+      theCoinFlipID
       theBetStarter
       theStartingWager
       blockNumber
@@ -17,13 +19,50 @@ const query = gql`
 
 const url = process.env.REACT_APP_THE_GRAPH_API_URL;
 
-export default function Dashboard() {
+export default function Dashboard({ contract }) {
   const { data, status } = useQuery({
     queryKey: ['activeCoinFlips'],
     async queryFn() {
       return await request(url, query);
     },
   });
+
+  const handleEndCoinFlip = async (coinFlipID, startingWager) => {
+    if (!contract) {
+      console.error("Contract is not initialized");
+      return;
+    }
+
+    try {
+      // Parse coinFlipID to integer
+      const coinFlipIDInt = parseInt(coinFlipID);
+      // Ensure startingWager is a string representing the amount in wei
+      const wagerValue = ethers.BigNumber.from(startingWager.toString()); // Safely create BigNumber
+
+      console.log(`Ending Coin Flip ID: ${coinFlipIDInt} with Wager: ${ethers.utils.formatEther(wagerValue)} ETH`);
+
+      const transaction = await contract.endCoinFlip(coinFlipIDInt, {
+        value: wagerValue,
+      });
+      await transaction.wait();
+
+      console.log(`Coin flip with ID ${coinFlipIDInt} ended with a wager of ${ethers.utils.formatEther(wagerValue)} ETH!`);
+
+      // Retrieve the details of the coin flip from the contract to check the winner/loser
+      const coinFlipDetails = await contract.EtherCoinFlipStructs(coinFlipIDInt);
+      const currentAddress = await contract.signer.getAddress();
+
+      if (coinFlipDetails.winner.toLowerCase() === currentAddress.toLowerCase()) {
+        alert("Congratulations! You won the coin flip!");
+      } else {
+        alert("Sorry, you lost the coin flip.");
+      }
+
+    } catch (error) {
+      console.error("Error ending coin flip:", error);
+      alert("Error ending coin flip. Please check the console for details.");
+    }
+  };
 
   return (
     <main>
@@ -33,11 +72,11 @@ export default function Dashboard() {
         <table>
           <thead>
             <tr>
+              <th>Coin Flip ID</th>
               <th>Bet Starter</th>
-              <th>Starting Wager (ETH)</th>
-              <th>Block Number</th>
-              <th>Block Timestamp</th>
-              <th>Transaction Hash</th>
+              <th>Wager</th>
+              <th>Action</th>
+              <th>Transaction</th>
             </tr>
           </thead>
           <tbody>
@@ -45,9 +84,19 @@ export default function Dashboard() {
               <tr key={flip.id}>
                 <td>{flip.theCoinFlipID}</td>
                 <td>{flip.theBetStarter}</td>
-                <td>{flip.theStartingWager / 1e18} ETH</td>
-                <td>{flip.blockNumber}</td>
-                <td>{new Date(flip.blockTimestamp * 1000).toLocaleString()}</td>
+                <td>{ethers.utils.formatEther(flip.theStartingWager)} ETH</td>
+                <td>
+                  <button
+                    onClick={() =>
+                      handleEndCoinFlip(
+                        flip.theCoinFlipID,
+                        flip.theStartingWager
+                      )
+                    }
+                  >
+                    End Coin Flip
+                  </button>
+                </td>
                 <td>
                   <a
                     href={`https://base-sepolia.blockscout.com/tx/${flip.transactionHash}`}
@@ -67,12 +116,3 @@ export default function Dashboard() {
     </main>
   );
 }
-
-// Create a query client for react-query
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 60 * 1000, // Data stays fresh for 1 minute
-    },
-  },
-});
