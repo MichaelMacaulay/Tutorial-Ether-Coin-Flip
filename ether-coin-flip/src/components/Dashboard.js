@@ -12,6 +12,7 @@ const query = gql`
       theStartingWager
       blockNumber
       blockTimestamp
+      isActive
       transactionHash
     }
   }
@@ -27,7 +28,7 @@ export default function Dashboard({ contract }) {
     },
   });
 
-  const handleEndCoinFlip = async (coinFlipID, startingWager) => {
+  const endCoinFlip = async (coinFlipID, startingWager) => {
     if (!contract) {
       console.error("Contract is not initialized");
       return;
@@ -39,7 +40,7 @@ export default function Dashboard({ contract }) {
       // Ensure startingWager is a string representing the amount in wei
       const wagerValue = ethers.BigNumber.from(startingWager.toString()); // Safely create BigNumber
 
-      console.log(`Ending Coin Flip ID: ${coinFlipIDInt} with Wager: ${ethers.utils.formatEther(wagerValue)} ETH`);
+      alert(`Ending Coin Flip ID: ${coinFlipIDInt} with Wager: ${ethers.utils.formatEther(wagerValue)} ETH`);
 
       const transaction = await contract.endCoinFlip(coinFlipIDInt, {
         value: wagerValue,
@@ -88,7 +89,7 @@ export default function Dashboard({ contract }) {
                 <td>
                   <button
                     onClick={() =>
-                      handleEndCoinFlip(
+                      endCoinFlip(
                         flip.theCoinFlipID,
                         flip.theStartingWager
                       )
