@@ -5,14 +5,23 @@ import { ethers } from 'ethers';
 
 const query = gql`
   {
-    startedCoinFlips(where: { isActive: true }, first: 10) {
+    startedCoinFlips(first: 10) {
       id
       theCoinFlipID
       theBetStarter
       theStartingWager
       blockNumber
       blockTimestamp
+      isActive
       transactionHash
+    }
+    finishedCoinFlips(first: 10) {
+      id
+      theCoinFlipID
+      winner
+      loser
+      blockNumber
+      blockTimestamp
     }
   }
 `;
@@ -27,7 +36,7 @@ export default function Dashboard({ contract }) {
     },
   });
 
-  const handleEndCoinFlip = async (coinFlipID, startingWager) => {
+  const endCoinFlip = async (coinFlipID, startingWager) => {
     if (!contract) {
       console.error("Contract is not initialized");
       return;
@@ -37,9 +46,9 @@ export default function Dashboard({ contract }) {
       // Parse coinFlipID to integer
       const coinFlipIDInt = parseInt(coinFlipID);
       // Ensure startingWager is a string representing the amount in wei
-      const wagerValue = ethers.BigNumber.from(startingWager.toString()); // Safely create BigNumber
+      const wagerValue = ethers.BigNumber.from(startingWager.toString());
 
-      console.log(`Ending Coin Flip ID: ${coinFlipIDInt} with Wager: ${ethers.utils.formatEther(wagerValue)} ETH`);
+      alert(`Ending Coin Flip ID: ${coinFlipIDInt} with Wager: ${ethers.utils.formatEther(wagerValue)} ETH`);
 
       const transaction = await contract.endCoinFlip(coinFlipIDInt, {
         value: wagerValue,
@@ -64,11 +73,26 @@ export default function Dashboard({ contract }) {
     }
   };
 
+  // Function to filter active coin flips
+  const getActiveCoinFlips = () => {
+    if (!data) return [];
+
+    const startedFlips = data.startedCoinFlips || [];
+    const finishedFlips = data.finishedCoinFlips || [];
+
+    const finishedIDs = new Set(finishedFlips.map(flip => flip.theCoinFlipID));
+
+    // Filter out finished coin flips
+    return startedFlips.filter(flip => !finishedIDs.has(flip.theCoinFlipID));
+  };
+
+  const activeCoinFlips = getActiveCoinFlips();
+
   return (
     <main>
       {status === 'loading' && <div>Loading active coin flips...</div>}
-      {status === 'error' && <div>Error occurred querying the subgraph.</div>}
-      {status === 'success' && data?.startedCoinFlips.length > 0 ? (
+      {status === 'error' && <div>Error occurred querying the subgraph :/</div>}
+      {status === 'success' && activeCoinFlips.length > 0 ? (
         <table>
           <thead>
             <tr>
@@ -80,7 +104,7 @@ export default function Dashboard({ contract }) {
             </tr>
           </thead>
           <tbody>
-            {data.startedCoinFlips.map((flip) => (
+            {activeCoinFlips.map((flip) => (
               <tr key={flip.id}>
                 <td>{flip.theCoinFlipID}</td>
                 <td>{flip.theBetStarter}</td>
@@ -88,7 +112,7 @@ export default function Dashboard({ contract }) {
                 <td>
                   <button
                     onClick={() =>
-                      handleEndCoinFlip(
+                      endCoinFlip(
                         flip.theCoinFlipID,
                         flip.theStartingWager
                       )
@@ -111,7 +135,7 @@ export default function Dashboard({ contract }) {
           </tbody>
         </table>
       ) : (
-        <p>No active coin flips available.</p>
+        <p>No active coin flips available D:</p>
       )}
     </main>
   );
