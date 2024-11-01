@@ -107,7 +107,7 @@ function App() {
       <div>
         <input
           type="number"
-          placeholder="Enter Wager Amount (ETH)"
+          placeholder="Enter Wager Amount in ETH"
           value={wager}
           onChange={(e) => setWager(e.target.value)}
         />
